@@ -1,0 +1,17 @@
+packages:
+  "date-fns": "For robust calendar math, interval generation, and safe date formatting"
+  "lucide-react": "For crisp, beautiful UI icons throughout the application"
+  "react-hook-form": "For state management in the Create Activity form"
+  "@hookform/resolvers": "For integrating Zod validation with the form"
+  "zod": "For strict schema validation on new activities"
+  "clsx": "For conditional tailwind class merging"
+  "tailwind-merge": "For conflict-free tailwind class merging"
+
+images:
+  - path: "artifacts/trip-planner/public/images/profile-bg.png"
+    description: "Abstract soft gradient background with playful sticker-like shapes, premium modern style, off-white and violet tones, subtle noise texture"
+    aspect_ratio: "16:9"
+
+notes:
+  - "The app relies purely on localStorage for data persistence (no backend needed per instructions)"
+  - "Using a simple pub/sub pattern in lib/data.ts to ensure all components react instantly to data changes"

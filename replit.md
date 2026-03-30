@@ -48,6 +48,21 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 - `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
 
+## Artifacts
+
+### `artifacts/trip-planner` (`@workspace/trip-planner`) — Group Trip Planner Web App
+
+Frontend-only React + Vite prototype for planning group trip activities. No backend — all data via localStorage.
+
+- **Preview path**: `/` (root)
+- **Stack**: React 18, Vite, TypeScript, Tailwind CSS, Wouter (routing), date-fns, React Hook Form + Zod, Lucide icons
+- **Data layer**: `src/lib/data.ts` — all data access functions (Supabase-ready interface)
+- **Types**: `src/types/index.ts` — `TripMember`, `Activity`, `ActivityStatus`, `CreateActivityInput`
+- **Seed data**: `src/data/seed.ts` — Tokyo trip with 5 members (Alex, Maya, Jordan, Sam, Riley) and 8 activities in April 2026
+- **Pages**: `ProfilePicker` (profile selection), `ActivityBoard` (card grid), `CalendarView` (monthly calendar)
+- **Key components**: `Navbar`, `ActivityCard`, `ActivityDetailsModal`, `CreateActivityModal`, `StatusBadge`, `MemberAvatarGroup`
+- **Features**: Profile picker (Netflix-style), join/leave/volunteer-to-book activities, create activities, calendar view, persistent localStorage
+
 ## Packages
 
 ### `artifacts/api-server` (`@workspace/api-server`)
