@@ -116,6 +116,10 @@ export function volunteerToBook(activityId: string, memberId: string): Activity 
   if (index === -1) return null;
   
   const activity = activities[index];
+  // Guard: only allow volunteering when no one else has already claimed the booking slot
+  if (activity.bookedByMemberId && activity.bookedByMemberId !== memberId) {
+    return activity; // already booked by someone else — no-op
+  }
   activity.bookedByMemberId = memberId;
   activity.status = 'booked';
   
