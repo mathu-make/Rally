@@ -13,10 +13,11 @@ const emit = () => listeners.forEach(l => l());
 
 export const subscribe = (l: Listener) => {
   listeners.add(l);
-  return () => listeners.delete(l);
+  return () => { listeners.delete(l); };
 };
 
-// Initialize seed data on load
+// Initialize seed data synchronously at module load time so that hooks
+// always find data in localStorage when they first call getMembers().
 export function initializeSeedData() {
   if (!localStorage.getItem(MEMBERS_KEY)) {
     localStorage.setItem(MEMBERS_KEY, JSON.stringify(SEED_MEMBERS));
@@ -25,6 +26,9 @@ export function initializeSeedData() {
     localStorage.setItem(ACTIVITIES_KEY, JSON.stringify(SEED_ACTIVITIES));
   }
 }
+
+// Run immediately when the module is imported so hooks always see data
+initializeSeedData();
 
 // Data Access Layer
 export function getMembers(): TripMember[] {

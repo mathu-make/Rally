@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { StatusBadge } from './StatusBadge';
-import { Activity } from '@/types';
+import { TripMember, Activity } from '@/types';
 import { useCurrentMember, joinActivity, leaveActivity, volunteerToBook, getMembers } from '@/lib/data';
 
 interface ActivityDetailsModalProps {
@@ -27,7 +27,7 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
 
   const participants = activity.participantIds
     .map(id => allMembers.find(m => m.id === id))
-    .filter(Boolean);
+    .filter((m): m is TripMember => m !== undefined);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
