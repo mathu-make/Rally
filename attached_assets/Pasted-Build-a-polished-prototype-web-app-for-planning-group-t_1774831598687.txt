@@ -1,0 +1,362 @@
+Build a polished prototype web app for planning group trip activities.
+
+## Goal
+
+Create a lean, stylish prototype for a shared trip planning app where a known group of people can propose activities, join activities, volunteer to book them, and view everything in a calendar.
+
+This is a prototype focused on:
+
+* product flow
+* UI quality
+* clean component structure
+* good frontend habits
+
+Do not build authentication yet.
+Do not build a real backend database yet.
+
+## Tech stack
+
+Use:
+
+* Next.js with App Router
+* TypeScript
+* Tailwind CSS
+
+You may use:
+
+* a lightweight calendar library
+* small animation libraries if helpful
+
+Do not use:
+
+* Replit database
+* Replit auth
+* Replit storage
+* Supabase yet
+* Firebase
+* any backend service
+
+## Data handling
+
+For this version, use:
+
+* localStorage for persistence
+* seed data for the first load
+
+Important:
+Structure the app so that a real database can be added later without rewriting the whole UI.
+
+Create a dedicated data layer such as:
+
+* `lib/data.ts`
+* `types/index.ts`
+
+All UI components should call the data layer functions rather than directly reading and writing localStorage.
+
+## Product concept
+
+This app is a lightweight shared planning board for a trip.
+
+A person opens the trip site and the first screen asks:
+**Who’s using the site?**
+
+They choose themselves from a list of trip members, similar to a Netflix profile picker.
+
+After choosing a profile, they can:
+
+* see all activities
+* create a new activity
+* join an activity
+* leave an activity
+* volunteer to book an activity
+* view activities on a calendar
+* switch profiles
+
+This is not secure login.
+It is just lightweight identity selection for a prototype.
+
+## Core app requirements
+
+### 1. Profile selection screen
+
+This should be the first screen if no profile is selected.
+
+Show large clickable member cards.
+Each card should include:
+
+* member name
+* initials avatar or simple avatar circle
+* expressive hover state
+* polished card styling
+
+When a member is selected:
+
+* store the selected member ID in localStorage
+* treat them as the current active user
+
+Also provide a way to switch profile later.
+
+### 2. Activity board page
+
+Create a board view showing all activities as beautiful cards.
+
+Each activity card should show:
+
+* title
+* date
+* start time and end time
+* location
+* status
+* who created it
+* who volunteered to book it
+* participant count
+* participant avatars or initials
+
+Actions on each card:
+
+* Join Activity
+* Leave Activity
+* Volunteer to Book
+* View Details
+
+Rules:
+
+* a member can only join an activity once
+* leaving removes them from participants
+* only one member can be the booking volunteer at a time
+* if someone volunteers to book, update status to Booked
+* if the active user is already the participant, show Leave instead of Join when appropriate
+
+### 3. Calendar page
+
+Create a calendar view showing all activities by date.
+
+Requirements:
+
+* month view is enough
+* activities should appear on their dates
+* clicking an activity opens the activity details
+* keep the calendar view clean and easy to read
+
+### 4. Create activity modal
+
+Allow the current selected member to create an activity.
+
+Fields:
+
+* title
+* description
+* date
+* start time
+* end time
+* location
+
+The currently selected member should automatically be set as the creator.
+
+### 5. Activity details modal or drawer
+
+Show full details for an activity:
+
+* title
+* description
+* date
+* time
+* location
+* created by
+* booked by
+* participant list
+* status
+
+Include action buttons here too:
+
+* Join
+* Leave
+* Volunteer to Book
+
+### 6. Navigation
+
+Include a top navigation bar with:
+
+* app name or trip name
+* Activity Board
+* Calendar
+* current selected profile
+* Switch Profile button
+* New Activity button
+
+## Visual style direction
+
+I want the styling to feel like a mix of:
+
+* polished premium product UI
+* playful internet-chaos personality
+
+Target balance:
+
+* 80% clean, premium, modern
+* 20% eccentric, playful, slightly absurd
+
+Design inspiration:
+
+* Stripe-like layout polish and structure
+* selective moments of loud personality similar to LingsCars
+
+## Visual design guidelines
+
+Use:
+
+* clean page structure
+* large rounded corners
+* strong spacing
+* polished modern cards
+* subtle gradients
+* soft shadows
+* crisp typography
+* smooth hover animations
+* high quality visual hierarchy
+
+Add playful personality through:
+
+* fun labels
+* colorful status pills
+* expressive empty states
+* slightly chaotic sticker-like accents
+* playful copy in small areas
+* bold profile selection cards
+* delightful motion
+
+Do not make the whole app visually messy.
+The structure should remain highly usable and easy to scan.
+
+### Style system suggestions
+
+Use a premium base palette with a couple of loud accent colors.
+
+For example:
+
+* soft off-white or very light gray background
+* dark text
+* premium accent like violet, blue, or indigo
+* one louder accent like lime, coral, hot pink, or orange
+
+The board page and profile picker can be more expressive.
+The calendar page should stay cleaner and more restrained.
+
+## UX tone
+
+The app should feel:
+
+* polished
+* modern
+* fun
+* slightly unhinged in a controlled way
+* still practical and readable
+
+Microcopy can have a little personality, but do not overdo it.
+Somewhere in between stripe.com and lingscars.com
+
+## App structure
+
+Please organize the project clearly.
+
+Suggested folders:
+
+* `app/`
+* `components/`
+* `components/ui/`
+* `lib/`
+* `types/`
+* `data/` if needed for seed data
+
+Suggested components:
+
+* ProfilePicker
+* Navbar
+* ActivityCard
+* ActivityBoard
+* ActivityDetailsModal
+* CreateActivityModal
+* CalendarView
+* StatusBadge
+* MemberAvatarGroup
+
+## Types
+
+Create clear TypeScript types for:
+
+* TripMember
+* Activity
+* ActivityStatus
+* ActivityParticipant
+
+Example concepts:
+
+* `TripMember` has id, name, avatarColor
+* `Activity` has id, title, description, date, startTime, endTime, location, createdByMemberId, bookedByMemberId, status, participantIds, createdAt
+
+## Data layer requirements
+
+Create a reusable local data layer with functions like:
+
+* getMembers()
+* getCurrentMember()
+* setCurrentMember(memberId)
+* getActivities()
+* createActivity(activityInput)
+* joinActivity(activityId, memberId)
+* leaveActivity(activityId, memberId)
+* volunteerToBook(activityId, memberId)
+
+These functions should use localStorage internally.
+
+Seed the app with sample data on first load.
+
+## Seed data
+
+Include:
+
+* one trip
+* 4 to 6 trip members
+* several example activities across different dates
+* some activities with participants already joined
+* at least one activity already booked
+
+Use realistic but fun sample activities for a group trip.
+
+## Functional expectations
+
+* app should work without a backend
+* profile selection should persist via localStorage
+* activities should persist via localStorage
+* code should be readable and modular
+* UI should feel polished, not like a wireframe
+* avoid putting all logic in a single file
+* include comments where useful
+* make the app easy to later migrate to Supabase
+
+## Future friendly architecture
+
+Very important:
+Build this so that localStorage can later be replaced by Supabase with minimal UI changes.
+
+That means:
+
+* keep business logic in the data layer
+* keep types centralized
+* keep components presentation focused
+* avoid tightly coupling UI to storage implementation
+
+## Final output expectations
+
+Please generate:
+
+* the full Next.js project structure
+* reusable components
+* seed data
+* localStorage data layer
+* polished UI styling
+* calendar integration
+* setup instructions
+* notes on where Supabase could be added later
+
+The result should feel like a real, stylish prototype I could show friends, not just a rough mockup.
