@@ -1,4 +1,4 @@
-import { MapPin, Clock, UserCheck } from 'lucide-react';
+import { MapPin, Clock, UserCheck, User } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,6 +65,10 @@ export function ActivityCard({ activity, onClickDetails }: ActivityCardProps) {
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin className="w-4 h-4 mr-2 text-primary/70" />
             <span className="truncate">{activity.location}</span>
+          </div>
+          <div className="flex items-center text-sm text-muted-foreground">
+            <User className="w-4 h-4 mr-2 text-primary/70" />
+            <span className="truncate">By {creator?.name || 'Unknown'}</span>
           </div>
           {volunteer && (
             <div className="flex items-center text-sm text-indigo-600 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-indigo-500/10 w-fit px-2 py-0.5 rounded">

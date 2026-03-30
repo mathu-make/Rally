@@ -3,13 +3,11 @@ import { Rocket } from 'lucide-react';
 import { useActivities } from '@/lib/data';
 import { ActivityCard } from '@/components/ActivityCard';
 import { ActivityDetailsModal } from '@/components/ActivityDetailsModal';
-import { Activity } from '@/types';
 
 export function ActivityBoard() {
   const activities = useActivities();
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
-  // Sort by date ascending, then by time
   const sortedActivities = [...activities].sort((a, b) => {
     const dateCompare = a.date.localeCompare(b.date);
     if (dateCompare !== 0) return dateCompare;
@@ -40,19 +38,20 @@ export function ActivityBoard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {sortedActivities.map((activity) => (
-            <ActivityCard 
-              key={activity.id} 
-              activity={activity} 
-              onClickDetails={() => setSelectedActivity(activity)}
+            <ActivityCard
+              key={activity.id}
+              activity={activity}
+              onClickDetails={() => setSelectedActivityId(activity.id)}
             />
           ))}
         </div>
       )}
 
-      <ActivityDetailsModal 
-        isOpen={!!selectedActivity} 
-        activity={selectedActivity} 
-        onClose={() => setSelectedActivity(null)} 
+      {/* Pass ID so modal always derives fresh activity data from the store */}
+      <ActivityDetailsModal
+        isOpen={!!selectedActivityId}
+        activityId={selectedActivityId}
+        onClose={() => setSelectedActivityId(null)}
       />
     </div>
   );

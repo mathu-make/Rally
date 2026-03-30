@@ -4,26 +4,29 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { StatusBadge } from './StatusBadge';
-import { TripMember, Activity } from '@/types';
-import { useCurrentMember, joinActivity, leaveActivity, volunteerToBook, getMembers } from '@/lib/data';
+import { TripMember } from '@/types';
+import { useCurrentMember, useActivities, joinActivity, leaveActivity, volunteerToBook, getMembers } from '@/lib/data';
 
 interface ActivityDetailsModalProps {
-  activity: Activity | null;
+  activityId: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDetailsModalProps) {
+export function ActivityDetailsModal({ activityId, isOpen, onClose }: ActivityDetailsModalProps) {
   const currentMember = useCurrentMember();
+  // Derive activity fresh from the live store each render — never stale after actions
+  const activities = useActivities();
+  const activity = activityId ? activities.find(a => a.id === activityId) ?? null : null;
+
   const allMembers = getMembers();
-  
+
   if (!activity) return null;
-  
+
   const creator = allMembers.find(m => m.id === activity.createdByMemberId);
   const volunteer = activity.bookedByMemberId ? allMembers.find(m => m.id === activity.bookedByMemberId) : null;
-  
+
   const isParticipant = currentMember ? activity.participantIds.includes(currentMember.id) : false;
-  const isVolunteer = currentMember ? activity.bookedByMemberId === currentMember.id : false;
 
   const participants = activity.participantIds
     .map(id => allMembers.find(m => m.id === id))
@@ -34,20 +37,19 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
       <DialogContent className="max-w-2xl p-0 overflow-hidden bg-card border-border/50 shadow-2xl rounded-2xl">
         {/* Decorative Header Image */}
         <div className="w-full h-32 sm:h-48 relative bg-primary/10">
-          {/* Unsplash abstract tokyo neon lights */}
-          <img 
-            src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&h=400&fit=crop" 
-            alt="City view" 
+          <img
+            src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&h=400&fit=crop"
+            alt="City view"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
           <div className="absolute bottom-4 left-6 flex items-center gap-3">
-             <StatusBadge status={activity.status} className="shadow-lg" />
-             {volunteer && (
-               <span className="text-xs font-bold text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md flex items-center shadow-lg">
-                 <UserCheck className="w-3 h-3 mr-1.5 text-lime-400" /> Booked by {volunteer.name}
-               </span>
-             )}
+            <StatusBadge status={activity.status} className="shadow-lg" />
+            {volunteer && (
+              <span className="text-xs font-bold text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md flex items-center shadow-lg">
+                <UserCheck className="w-3 h-3 mr-1.5 text-lime-400" /> Booked by {volunteer.name}
+              </span>
+            )}
           </div>
         </div>
 
@@ -70,7 +72,7 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
                   <p className="text-foreground leading-relaxed whitespace-pre-wrap">{activity.description}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary mt-0.5" />
                 <div>
@@ -78,7 +80,7 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
                   <p className="text-foreground font-medium">{activity.location}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <Calendar className="w-5 h-5 text-primary mt-0.5" />
                 <div>
@@ -96,10 +98,10 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
 
             <div className="bg-muted/30 rounded-xl p-5 border border-border/50 h-fit">
               <h4 className="text-sm font-bold text-foreground mb-4 flex items-center justify-between">
-                Who's In? 
+                Who's In?
                 <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">{participants.length}</span>
               </h4>
-              <div className="space-y-3 mb-6 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-3 mb-6 max-h-[200px] overflow-y-auto pr-2">
                 {participants.length === 0 ? (
                   <p className="text-sm text-muted-foreground italic">No one has joined yet. Be the first!</p>
                 ) : (
@@ -108,7 +110,7 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
                       <Avatar className={`w-8 h-8 ${p.avatarColor} shadow-sm`}>
                         <AvatarFallback className="bg-transparent text-white text-xs font-bold">{p.initials}</AvatarFallback>
                       </Avatar>
-                      <span className="text-sm font-medium">{p.name} {p.id === currentMember?.id ? "(You)" : ""}</span>
+                      <span className="text-sm font-medium">{p.name} {p.id === currentMember?.id ? '(You)' : ''}</span>
                       {activity.bookedByMemberId === p.id && (
                         <span className="ml-auto text-[10px] uppercase tracking-wider font-bold bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">Booker</span>
                       )}
@@ -120,20 +122,21 @@ export function ActivityDetailsModal({ activity, isOpen, onClose }: ActivityDeta
               {currentMember && (
                 <div className="space-y-3 pt-4 border-t border-border">
                   {!isParticipant ? (
-                    <Button onClick={() => joinActivity(activity.id, currentMember.id)} className="w-full font-bold shadow-md">
+                    <Button onClick={() => joinActivity(activity.id, currentMember.id)} className="w-full font-bold shadow-md" data-testid={`modal-btn-join-${activity.id}`}>
                       Join Activity
                     </Button>
                   ) : (
-                    <Button onClick={() => leaveActivity(activity.id, currentMember.id)} variant="outline" className="w-full">
+                    <Button onClick={() => leaveActivity(activity.id, currentMember.id)} variant="outline" className="w-full" data-testid={`modal-btn-leave-${activity.id}`}>
                       Leave Activity
                     </Button>
                   )}
-                  
+
                   {activity.status === 'open' && isParticipant && !activity.bookedByMemberId && (
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       onClick={() => volunteerToBook(activity.id, currentMember.id)}
                       className="w-full text-sm bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold border border-indigo-200"
+                      data-testid={`modal-btn-volunteer-${activity.id}`}
                     >
                       Volunteer to Book
                     </Button>

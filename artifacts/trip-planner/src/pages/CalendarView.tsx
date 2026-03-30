@@ -14,7 +14,6 @@ import {
 } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useActivities } from '@/lib/data';
-import { Activity } from '@/types';
 import { Button } from '@/components/ui/button';
 import { ActivityDetailsModal } from '@/components/ActivityDetailsModal';
 import { cn } from '@/lib/utils';
@@ -22,7 +21,7 @@ import { cn } from '@/lib/utils';
 export function CalendarView() {
   const activities = useActivities();
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3, 1)); // Default to April 2026 (seed data)
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(monthStart);
@@ -96,7 +95,7 @@ export function CalendarView() {
                 {dayActivities.slice(0, 3).map(a => (
                   <button 
                     key={a.id} 
-                    onClick={() => setSelectedActivity(a)} 
+                    onClick={() => setSelectedActivityId(a.id)} 
                     className={cn(
                       "text-left text-[10px] sm:text-xs truncate px-1.5 sm:px-2 py-1 rounded shadow-sm font-bold transition-all w-full",
                       getStatusColorClass(a.status)
@@ -119,10 +118,10 @@ export function CalendarView() {
         })}
       </div>
 
-      <ActivityDetailsModal 
-        isOpen={!!selectedActivity} 
-        activity={selectedActivity} 
-        onClose={() => setSelectedActivity(null)} 
+      <ActivityDetailsModal
+        isOpen={!!selectedActivityId}
+        activityId={selectedActivityId}
+        onClose={() => setSelectedActivityId(null)}
       />
     </div>
   );
