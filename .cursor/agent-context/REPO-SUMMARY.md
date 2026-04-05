@@ -1,6 +1,6 @@
 # Rally — repository summary
 
-Last updated: 2026-04-04
+Last updated: 2026-04-05
 
 ## What this is
 
@@ -28,7 +28,7 @@ Technically **Rally** is a **pnpm monorepo** of TypeScript packages and Vite/Rea
 - **`@workspace/api-spec`:** `openapi.yaml` (OpenAPI 3.1) plus **Orval** config. **Codegen:** `pnpm run codegen` — emits into `lib/api-client-react/src/generated` and `lib/api-zod/src/generated`. The OpenAPI **`info.title` must remain `Api`** (Orval paths and transformers assume this).
 - **`@workspace/api-client-react`:** Generated **React Query** hooks client with a **`custom-fetch.ts`** mutator; base URL `/api`.
 - **`@workspace/api-zod`:** Generated **Zod** schemas/types from the same OpenAPI spec (for validation/shape sharing with the server).
-- **`@workspace/db`:** **Drizzle** package (`drizzle.config.ts`). **`src/schema/index.ts` is currently an empty export** with commented templates for tables + `drizzle-zod` insert schemas — no live tables yet.
+- **`@workspace/db`:** **Drizzle** package (`drizzle.config.ts`): schema in `src/schema/`, versioned SQL in `drizzle/`, scripts `generate` / `migrate` / `push` / `seed`. **GitHub Actions:** push to `main` runs **`.github/workflows/supabase-db-migrate.yml`** (`pnpm --filter @workspace/db run migrate`) when repo secret **`DATABASE_URL`** is set (see workflow file comments). Does not run seed.
 
 ### `artifacts/` applications
 
